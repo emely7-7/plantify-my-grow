@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Droplets, Sun, MapPin, Calendar } from "lucide-react";
 import { Plant, CareEvent } from "@/types/plant";
 
@@ -9,9 +10,10 @@ interface PlantDetailsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   careHistory: CareEvent[];
+  onWater: (plantId: string) => void;
 }
 
-const PlantDetailsModal = ({ plant, open, onOpenChange, careHistory }: PlantDetailsModalProps) => {
+const PlantDetailsModal = ({ plant, open, onOpenChange, careHistory, onWater }: PlantDetailsModalProps) => {
   const [timeSinceWatering, setTimeSinceWatering] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -87,6 +89,16 @@ const PlantDetailsModal = ({ plant, open, onOpenChange, careHistory }: PlantDeta
         </DialogHeader>
 
         <div className="space-y-6">
+          <Button 
+            onClick={() => {
+              onWater(plant.id);
+            }}
+            className="w-full"
+            size="lg"
+          >
+            <Droplets className="w-5 h-5 mr-2" />
+            Regar Agora
+          </Button>
           <div className="aspect-video overflow-hidden rounded-lg bg-muted">
             <img
               src={plant.imageUrl}

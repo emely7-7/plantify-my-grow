@@ -120,6 +120,43 @@ const Index = () => {
     setIsDetailsModalOpen(true);
   };
 
+  const handleWaterPlant = (plantId: string) => {
+    const now = new Date().toISOString();
+    
+    // Update plant's lastWatered and status
+    setPlants(plants.map(p => {
+      if (p.id === plantId) {
+        return {
+          ...p,
+          lastWatered: now,
+          status: "healthy" as const
+        };
+      }
+      return p;
+    }));
+
+    // Add to care history
+    const newEvent: CareEvent = {
+      id: Date.now().toString(),
+      plantId,
+      type: "water",
+      date: now,
+      notes: "Regada"
+    };
+    setCareHistory([newEvent, ...careHistory]);
+
+    // Update viewing plant if it's open
+    if (viewingPlant?.id === plantId) {
+      setViewingPlant({
+        ...viewingPlant,
+        lastWatered: now,
+        status: "healthy"
+      });
+    }
+
+    toast.success("Rega registrada com sucesso!");
+  };
+
   const getNextWatering = (plant: Plant) => {
     const lastWatered = new Date(plant.lastWatered);
     const nextWatering = new Date(lastWatered.getTime() + plant.wateringFrequency * 24 * 60 * 60 * 1000);
@@ -187,6 +224,7 @@ const Index = () => {
                     onEdit={handleEditPlant}
                     onDelete={handleDeletePlant}
                     onView={handleViewPlant}
+                    onWater={handleWaterPlant}
                   />
                 ))}
               </div>
@@ -272,6 +310,7 @@ const Index = () => {
         open={isDetailsModalOpen}
         onOpenChange={setIsDetailsModalOpen}
         careHistory={careHistory}
+        onWater={handleWaterPlant}
       />
     </div>
   );

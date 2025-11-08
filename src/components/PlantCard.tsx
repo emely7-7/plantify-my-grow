@@ -9,9 +9,10 @@ interface PlantCardProps {
   onEdit: (plant: Plant) => void;
   onDelete: (id: string) => void;
   onView: (plant: Plant) => void;
+  onWater: (id: string) => void;
 }
 
-const PlantCard = ({ plant, onEdit, onDelete, onView }: PlantCardProps) => {
+const PlantCard = ({ plant, onEdit, onDelete, onView, onWater }: PlantCardProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "needs-water":
@@ -71,16 +72,26 @@ const PlantCard = ({ plant, onEdit, onDelete, onView }: PlantCardProps) => {
 
         <div className="flex gap-2 pt-2">
           <Button
+            variant="default"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onWater(plant.id);
+            }}
+            className="flex-1"
+          >
+            <Droplets className="w-4 h-4 mr-1" />
+            Regar
+          </Button>
+          <Button
             variant="outline"
             size="sm"
-            className="flex-1"
             onClick={(e) => {
               e.stopPropagation();
               onEdit(plant);
             }}
           >
-            <Edit className="w-4 h-4 mr-1" />
-            Editar
+            <Edit className="w-4 h-4" />
           </Button>
           <Button
             variant="destructive"
