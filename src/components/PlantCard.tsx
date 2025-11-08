@@ -8,9 +8,10 @@ interface PlantCardProps {
   plant: Plant;
   onEdit: (plant: Plant) => void;
   onDelete: (id: string) => void;
+  onView: (plant: Plant) => void;
 }
 
-const PlantCard = ({ plant, onEdit, onDelete }: PlantCardProps) => {
+const PlantCard = ({ plant, onEdit, onDelete, onView }: PlantCardProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "needs-water":
@@ -34,7 +35,7 @@ const PlantCard = ({ plant, onEdit, onDelete }: PlantCardProps) => {
   };
 
   return (
-    <Card className="hover-lift group overflow-hidden">
+    <Card className="hover-lift group overflow-hidden cursor-pointer" onClick={() => onView(plant)}>
       <div className="aspect-video overflow-hidden bg-muted">
         <img
           src={plant.imageUrl}
@@ -73,7 +74,10 @@ const PlantCard = ({ plant, onEdit, onDelete }: PlantCardProps) => {
             variant="outline"
             size="sm"
             className="flex-1"
-            onClick={() => onEdit(plant)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(plant);
+            }}
           >
             <Edit className="w-4 h-4 mr-1" />
             Editar
@@ -81,7 +85,10 @@ const PlantCard = ({ plant, onEdit, onDelete }: PlantCardProps) => {
           <Button
             variant="destructive"
             size="sm"
-            onClick={() => onDelete(plant.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(plant.id);
+            }}
           >
             <Trash2 className="w-4 h-4" />
           </Button>

@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Calendar, History, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PlantCard from "@/components/PlantCard";
 import AddPlantModal from "@/components/AddPlantModal";
+import PlantDetailsModal from "@/components/PlantDetailsModal";
 import Header from "@/components/Header";
 import { Plant, CareEvent } from "@/types/plant";
 import { toast } from "sonner";
@@ -15,6 +16,9 @@ const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlant, setEditingPlant] = useState<Plant | null>(null);
   const [careHistory, setCareHistory] = useState<CareEvent[]>([]);
+  const [viewingPlant, setViewingPlant] = useState<Plant | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const deletedPlantRef = useRef<Plant | null>(null);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("isAuthenticated");
@@ -34,6 +38,7 @@ const Index = () => {
         sunlight: "medium",
         status: "healthy",
         lastWatered: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        location: "Sala de estar",
       },
       {
         id: "2",
@@ -44,6 +49,7 @@ const Index = () => {
         sunlight: "low",
         status: "needs-water",
         lastWatered: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+        location: "Banheiro",
       },
     ];
 
@@ -86,8 +92,32 @@ const Index = () => {
   };
 
   const handleDeletePlant = (id: string) => {
+    const plantToDelete = plants.find(p => p.id === id);
+    if (!plantToDelete) return;
+
+    deletedPlantRef.current = plantToDelete;
     setPlants(plants.filter(p => p.id !== id));
-    toast.success("Planta removida");
+
+    toast.success("Planta removida", {
+      duration: 30000,
+      action: {
+        label: "Desfazer",
+        onClick: () => handleRestorePlant(),
+      },
+    });
+  };
+
+  const handleRestorePlant = () => {
+    if (deletedPlantRef.current) {
+      setPlants([...plants, deletedPlantRef.current]);
+      toast.success("Planta restaurada");
+      deletedPlantRef.current = null;
+    }
+  };
+
+  const handleViewPlant = (plant: Plant) => {
+    setViewingPlant(plant);
+    setIsDetailsModalOpen(true);
   };
 
   const getNextWatering = (plant: Plant) => {
@@ -156,6 +186,7 @@ const Index = () => {
                     plant={plant}
                     onEdit={handleEditPlant}
                     onDelete={handleDeletePlant}
+                    onView={handleViewPlant}
                   />
                 ))}
               </div>
@@ -234,6 +265,13 @@ const Index = () => {
         }}
         onSave={handleSavePlant}
         editingPlant={editingPlant}
+      />
+
+      <PlantDetailsModal
+        plant={viewingPlant}
+        open={isDetailsModalOpen}
+        onOpenChange={setIsDetailsModalOpen}
+        careHistory={careHistory}
       />
     </div>
   );

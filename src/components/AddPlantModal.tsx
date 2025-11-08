@@ -22,6 +22,7 @@ const AddPlantModal = ({ open, onOpenChange, onSave, editingPlant }: AddPlantMod
     sunlight: "medium",
     status: "healthy",
     lastWatered: new Date().toISOString().split("T")[0],
+    location: "",
   });
 
   useEffect(() => {
@@ -34,6 +35,7 @@ const AddPlantModal = ({ open, onOpenChange, onSave, editingPlant }: AddPlantMod
         sunlight: editingPlant.sunlight,
         status: editingPlant.status,
         lastWatered: editingPlant.lastWatered.split("T")[0],
+        location: editingPlant.location || "",
       });
     } else {
       setFormData({
@@ -44,6 +46,7 @@ const AddPlantModal = ({ open, onOpenChange, onSave, editingPlant }: AddPlantMod
         sunlight: "medium",
         status: "healthy",
         lastWatered: new Date().toISOString().split("T")[0],
+        location: "",
       });
     }
   }, [editingPlant, open]);
@@ -101,6 +104,16 @@ const AddPlantModal = ({ open, onOpenChange, onSave, editingPlant }: AddPlantMod
               onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
               placeholder="https://exemplo.com/planta.jpg"
               required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="location">Localização</Label>
+            <Input
+              id="location"
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              placeholder="Ex: Sala de estar, Banheiro"
             />
           </div>
 

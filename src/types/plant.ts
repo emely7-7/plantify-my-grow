@@ -7,6 +7,7 @@ export interface Plant {
   sunlight: "low" | "medium" | "high";
   status: "healthy" | "needs-water" | "normal";
   lastWatered: string;
+  location?: string;
 }
 
 export interface CareEvent {
